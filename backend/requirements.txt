@@ -1,0 +1,9 @@
+fastapi==0.110.0          # Core FastAPI framework
+uvicorn[standard]==0.27.0 # ASGI server with reload support
+python-dotenv==1.0.0       # Load .env variables
+requests==2.32.0           # For GitHub API calls
+SQLAlchemy==2.0.30         # ORM for SQLite
+pydantic==2.6.3            # Data validation (comes with FastAPI)
+pydantic-settings==2.2.1
+httpx==0.27.0
+pydantic-settings==2.2.1

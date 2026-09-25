@@ -1,0 +1,239 @@
+/* Styles for the Code chat tab. Class names are prefixed with chat- to avoid clashes. */
+
+.chat-page {
+  --chat-mono: "JetBrains Mono", "Cascadia Code", Consolas, "SF Mono", monospace;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.chat-title { color: #eee; margin: 0 0 4px; }
+.chat-sub { color: #888; margin: 0; }
+
+/* ---------- toolbar ---------- */
+.chat-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 22px; }
+
+.chat-btn,
+.chat-select {
+  background: #1a1a1a;
+  color: #ccc;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.chat-select { max-width: 360px; padding: 8px 10px; }
+.chat-btn:hover,
+.chat-select:hover { border-color: #3a3a3a; background: #202020; }
+.chat-btn:focus-visible,
+.chat-select:focus-visible,
+.chat-chip:focus-visible,
+.chat-send:focus-visible,
+.chat-code-copy:focus-visible { outline: 2px solid #4f8ef7; outline-offset: 2px; }
+
+/* ---------- messages ---------- */
+.chat-user {
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  border-left: 3px solid #4f8ef7;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+.chat-user pre {
+  margin: 0;
+  max-height: 260px;
+  overflow: auto;
+  color: #d4d4d4;
+  font: 13px/1.55 var(--chat-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-md {
+  color: #d4d4d4;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 26px;
+  word-break: break-word;
+}
+.chat-md > :first-child { margin-top: 0; }
+.chat-md > :last-child { margin-bottom: 0; }
+
+.chat-md p,
+.chat-md ul,
+.chat-md ol,
+.chat-md blockquote { max-width: 72ch; margin: 0 0 14px; }
+.chat-md ul,
+.chat-md ol { padding-left: 22px; }
+.chat-md li { margin: 5px 0; }
+.chat-md li > p { margin: 0; }
+.chat-md li > ul,
+.chat-md li > ol { margin: 4px 0; }
+
+.chat-md h1,
+.chat-md h2,
+.chat-md h3,
+.chat-md h4 { color: #f2f2f2; font-weight: 600; line-height: 1.3; margin: 24px 0 8px; }
+.chat-md h1 { font-size: 20px; }
+.chat-md h2 { font-size: 18px; }
+.chat-md h3 { font-size: 16px; }
+.chat-md h4 { font-size: 15px; }
+
+.chat-md strong { color: #f2f2f2; font-weight: 600; }
+.chat-md a { color: #4f8ef7; }
+.chat-md hr { border: 0; border-top: 1px solid #2a2a2a; margin: 20px 0; }
+.chat-md blockquote { border-left: 3px solid #333; padding-left: 14px; color: #9a9a9a; }
+
+/* inline `code` (anything not inside a code block) */
+.chat-md :not(pre) > code {
+  background: #1c1c1c;
+  border: 1px solid #2a2a2a;
+  color: #e5c07b;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font: 0.87em var(--chat-mono);
+}
+
+/* ---------- tables ---------- */
+.chat-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 18px;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+}
+.chat-md table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.5; }
+.chat-md th,
+.chat-md td { padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid #262626; }
+.chat-md th { background: #1a1a1a; color: #eee; font-weight: 600; white-space: nowrap; }
+.chat-md tr:last-child td { border-bottom: 0; }
+
+/* ---------- code blocks ---------- */
+.chat-code {
+  margin: 0 0 18px;
+  border: 1px solid #262b33;
+  border-radius: 8px;
+  background: #0d1117;
+  overflow: hidden;
+}
+.chat-code-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px 5px 14px;
+  background: #161b22;
+  border-bottom: 1px solid #262b33;
+  color: #8b949e;
+  font: 12px var(--chat-mono);
+}
+.chat-code-copy {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font: 12px system-ui, sans-serif;
+  cursor: pointer;
+}
+.chat-code-copy:hover { background: #21262d; }
+.chat-code pre { margin: 0; padding: 14px; overflow-x: auto; }
+.chat-code pre code {
+  display: block;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #c9d1d9;
+  font: 13px/1.6 var(--chat-mono);
+}
+.chat-code pre code.hljs { background: transparent; padding: 0; }
+
+/* ---------- errors, quick replies, input ---------- */
+.chat-error {
+  background: #3a1d1d;
+  color: #ff9b9b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.chat-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chat-chip {
+  background: transparent;
+  color: #4f8ef7;
+  border: 1px solid #2f4f8a;
+  border-radius: 16px;
+  padding: 5px 13px;
+  font: 13px system-ui, sans-serif;
+  cursor: pointer;
+}
+.chat-chip:hover { background: #17233a; border-color: #4f8ef7; }
+
+.chat-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #1a1a1a;
+  color: #eee;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+  font: 13px/1.55 var(--chat-mono);
+  resize: vertical;
+}
+.chat-input:focus { outline: none; border-color: #4f8ef7; }
+.chat-input::placeholder { color: #666; }
+
+.chat-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 12px; }
+.chat-hint { color: #666; font-size: 12px; }
+.chat-send {
+  background: #4f8ef7;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 24px;
+  font: 600 14px system-ui, sans-serif;
+  cursor: pointer;
+}
+.chat-send:hover:not(:disabled) { background: #6aa0f9; }
+.chat-send:disabled { opacity: 0.5; cursor: default; }
+
+/* No font ligatures in code: "==" must never look like "=" or a joined glyph.
+   Placed last with higher specificity because the `font:` shorthand above resets these. */
+.chat-page .chat-code pre code,
+.chat-page .chat-user pre,
+.chat-page .chat-md :not(pre) > code,
+.chat-page .chat-input {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+/* ---------- screenshot attach ---------- */
+.chat-attach { position: relative; display: inline-block; margin-bottom: 10px; }
+.chat-attach img {
+  display: block;
+  max-width: 240px;
+  max-height: 120px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+}
+.chat-attach-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid #3a3a3a;
+  background: #222;
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.chat-attach-remove:hover { background: #333; }
+.chat-attach-remove:focus-visible { outline: 2px solid #4f8ef7; outline-offset: 2px; }
+.chat-footer-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.chat-user .chat-md { margin-bottom: 0; }
