@@ -6,11 +6,9 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import CopyButton from "../components/CopyButton";
 import { useToast } from "../components/ToastContainer";
 
-// Default fallback options if /models API call fails
+// Fallback: just use the server default (empty string = use LLM_MODEL from .env)
 const FALLBACK_MODELS = [
   { id: "", label: "Default Model (Server Config)" },
-  { id: "gpt-4o-mini", label: "GPT-4o Mini" },
-  { id: "gpt-4o", label: "GPT-4o" },
 ];
 
 // Helper: format review as Markdown for copying

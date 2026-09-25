@@ -15,11 +15,9 @@ const MAX_IMAGE_SIDE = 1600; // big screenshots are shrunk before upload
 const MAX_IMAGE_CHARS = 3_500_000; // stays under the backend limit (4,000,000)
 const SCREENSHOT_MARK = "📷"; // backend starts screenshot messages with this
 
-// Default fallback options if /models API call fails
+// Fallback: just use the server default (empty string = use LLM_MODEL from .env)
 const FALLBACK_MODELS = [
   { id: "", label: "Default Model (Server Config)" },
-  { id: "gpt-4o-mini", label: "GPT-4o Mini" },
-  { id: "gpt-4o", label: "GPT-4o" },
 ];
 
 // One-click follow-ups, shown once a chat has started
