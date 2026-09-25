@@ -24,10 +24,11 @@ export const api = {
   // ---- PR review ----
 
   // Submit a PR URL for review → returns full ReviewResponse
-  createReview: (prUrl) =>
+  // model is optional; if not provided, backend uses default
+  createReview: (prUrl, model = null) =>
     request("/reviews", {
       method: "POST",
-      body: JSON.stringify({ pr_url: prUrl }),
+      body: JSON.stringify({ pr_url: prUrl, model }),
     }),
 
   // Recent reviews (lightweight rows for History page)
@@ -40,14 +41,14 @@ export const api = {
 
   // Start a chat with pasted code and/or a screenshot (base64 data URL)
   // → returns the chat with its messages
-  createChat: (content, image = null) =>
-    request("/chats", { method: "POST", body: JSON.stringify({ content, image }) }),
+  createChat: (content, image = null, model = null) =>
+    request("/chats", { method: "POST", body: JSON.stringify({ content, image, model }) }),
 
   // Follow-up message (text and/or screenshot) in an existing chat → returns the updated chat
-  sendChatMessage: (id, content, image = null) =>
+  sendChatMessage: (id, content, image = null, model = null) =>
     request(`/chats/${id}/messages`, {
       method: "POST",
-      body: JSON.stringify({ content, image }),
+      body: JSON.stringify({ content, image, model }),
     }),
 
   listChats: () => request("/chats"),

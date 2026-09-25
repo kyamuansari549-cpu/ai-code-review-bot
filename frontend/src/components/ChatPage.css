@@ -15,6 +15,39 @@
 }
 .chat-sub { color: var(--text-muted); font-size: 14px; margin: 0; }
 
+/* ---------- header ---------- */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.model-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.model-label {
+  color: var(--text-muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.model-select {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  min-width: 220px;
+}
+.model-select:hover { border-color: var(--border-strong); }
+.model-select:focus { outline: none; border-color: var(--accent); }
+.model-select:disabled { opacity: 0.5; cursor: default; }
+
 /* ---------- toolbar ---------- */
 .chat-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 24px; }
 
@@ -43,6 +76,12 @@
 .chat-btn:hover,
 .chat-select:hover { border-color: var(--border-strong); color: var(--text); }
 .chat-btn:disabled { opacity: 0.5; cursor: default; }
+
+.chat-btn .kbd,
+.chat-send .kbd {
+  margin-left: 6px;
+  opacity: 0.8;
+}
 
 /* ---------- messages ---------- */
 .chat-user {

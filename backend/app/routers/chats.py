@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from .. import chat_storage
 from ..chat_schemas import ChatListItem, ChatOut, MessageCreate
 from ..chat_service import VisionNotConfiguredError, build_user_content, chat_completion
+from ..config import settings
 from ..database import get_db
 from ..llm_reviewer import LLMError
 
@@ -22,10 +23,10 @@ def _prepare(payload: MessageCreate) -> str:
         raise HTTPException(status_code=502, detail=str(exc))
 
 
-def _ask(history: list[dict]) -> str:
+def _ask(history: list[dict], model: str | None = None) -> str:
     """Call the LLM and turn our LLMError into a 502 for the client."""
     try:
-        return chat_completion(history)
+        return chat_completion(history, model=model)
     except LLMError as exc:
         raise HTTPException(status_code=502, detail=str(exc))
 
@@ -34,10 +35,11 @@ def _ask(history: list[dict]) -> str:
 def create_chat(payload: MessageCreate, db: Session = Depends(get_db)):
     """Start a new chat with code, a question or a screenshot in the first message."""
     user_text = _prepare(payload)
+    model = payload.model or settings.LLM_MODEL
     # Ask the LLM first; only save if it succeeds, so failures leave no half-made chat
-    reply = _ask([{"role": "user", "content": user_text}])
+    reply = _ask([{"role": "user", "content": user_text}], model=model)
 
-    convo = chat_storage.create_conversation(db, user_text)
+    convo = chat_storage.create_conversation(db, user_text, model=model)
     chat_storage.add_message(db, convo.id, "user", user_text)
     chat_storage.add_message(db, convo.id, "assistant", reply)
     db.refresh(convo)
@@ -52,11 +54,12 @@ def send_message(chat_id: int, payload: MessageCreate, db: Session = Depends(get
         raise HTTPException(status_code=404, detail=f"Chat {chat_id} not found")
 
     user_text = _prepare(payload)
+    model = payload.model or convo.model or settings.LLM_MODEL
 
     # The LLM has no memory: resend the whole history plus the new message
     history = [{"role": m.role, "content": m.content} for m in convo.messages]
     history.append({"role": "user", "content": user_text})
-    reply = _ask(history)
+    reply = _ask(history, model=model)
 
     chat_storage.add_message(db, convo.id, "user", user_text)
     chat_storage.add_message(db, convo.id, "assistant", reply)

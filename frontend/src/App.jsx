@@ -4,6 +4,9 @@ import "./App.css";
 import ChatPage from "./components/ChatPage";
 import HomePage from "./components/HomePage";
 import HistoryPage from "./components/HistoryPage";
+import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./components/ToastContainer";
+import ThemeToggle from "./components/ThemeToggle";
 
 const TABS = [
   { id: "chat", label: "Code chat" },
@@ -32,7 +35,7 @@ function Mark() {
 // Tab state is enough for a few pages, so no router dependency.
 // ChatPage stays mounted (only hidden) so switching tabs doesn't lose the conversation.
 // The PR pages remount on every visit, so History re-fetches (good).
-export default function App() {
+function AppContent() {
   const [tab, setTab] = useState("chat");
 
   return (
@@ -54,6 +57,7 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <ThemeToggle />
       </header>
 
       <div style={{ display: tab === "chat" ? "block" : "none" }}>
@@ -62,5 +66,15 @@ export default function App() {
       {tab === "home" && <HomePage />}
       {tab === "history" && <HistoryPage />}
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

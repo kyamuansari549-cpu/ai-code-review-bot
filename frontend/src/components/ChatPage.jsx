@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -6,11 +6,23 @@ import "highlight.js/styles/github-dark.css"; // syntax colors for code blocks
 import "./ChatPage.css";
 import { api } from "../api/client";
 import LoadingSpinner from "./LoadingSpinner";
+import CopyButton from "./CopyButton";
+import { useToast } from "./ToastContainer";
+import { useKeyboardShortcuts, formatShortcut } from "../hooks/useKeyboardShortcuts";
 
 const MAX_CHARS = 30000; // same limit as the backend (chat_schemas.py)
 const MAX_IMAGE_SIDE = 1600; // big screenshots are shrunk before upload
 const MAX_IMAGE_CHARS = 3_500_000; // stays under the backend limit (4,000,000)
 const SCREENSHOT_MARK = "📷"; // backend starts screenshot messages with this
+
+// Model options - in production, fetch from backend /models endpoint
+const MODEL_OPTIONS = [
+  { id: "gpt-4o-mini", label: "GPT-4o Mini (fast, cheap)" },
+  { id: "gpt-4o", label: "GPT-4o (best quality)" },
+  { id: "gpt-4-turbo", label: "GPT-4 Turbo" },
+  { id: "claude-3-5-sonnet", label: "Claude 3.5 Sonnet" },
+  { id: "llama-3.1-70b", label: "Llama 3.1 70B (local)" },
+];
 
 // One-click follow-ups, shown once a chat has started
 const QUICK_REPLIES = [
@@ -131,8 +143,10 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [attachError, setAttachError] = useState("");
+  const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0].id);
   const bottomRef = useRef(null);
   const fileRef = useRef(null);
+  const { showToast } = useToast();
 
   const loadChats = () => {
     api
@@ -167,7 +181,7 @@ export default function ChatPage() {
     }
   };
 
-  const send = async (text) => {
+  const send = useCallback(async (text) => {
     const content = text.trim();
     const fromBox = text === input;
     const img = fromBox ? image : null; // quick-reply buttons never carry the screenshot
@@ -189,8 +203,8 @@ export default function ChatPage() {
 
     try {
       const data = chatId
-        ? await api.sendChatMessage(chatId, content, img)
-        : await api.createChat(content, img);
+        ? await api.sendChatMessage(chatId, content, img, selectedModel)
+        : await api.createChat(content, img, selectedModel);
       setChatId(data.id);
       setMessages(data.messages);
       loadChats();
@@ -205,7 +219,19 @@ export default function ChatPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [chatId, input, image, loading, selectedModel]);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    "ctrl+enter": () => send(input),
+    "meta+enter": () => send(input),
+    "ctrl+n": () => newChat(),
+    "meta+n": () => newChat(),
+    "escape": () => {
+      if (image) setImage(null);
+      if (attachError) setAttachError("");
+    },
+  }, { enableInInputs: true });
 
   const newChat = () => {
     setChatId(null);
@@ -242,13 +268,31 @@ export default function ChatPage() {
 
   return (
     <div className="chat-page">
-      <h1 className="chat-title">Code chat</h1>
-      <p className="chat-sub">
-        Paste code or a screenshot, get a review, then ask follow-ups or the full fixed code.
-      </p>
+      <div style={styles.header}>
+        <div>
+          <h1 className="chat-title">Code chat</h1>
+          <p className="chat-sub">
+            Paste code or a screenshot, get a review, then ask follow-ups or the full fixed code.
+          </p>
+        </div>
+        <div style={styles.modelSelectWrapper}>
+          <label htmlFor="chat-model-select" style={styles.modelLabel}>Model:</label>
+          <select
+            id="chat-model-select"
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            disabled={loading}
+            style={styles.modelSelect}
+          >
+            {MODEL_OPTIONS.map((m) => (
+              <option key={m.id} value={m.id}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="chat-toolbar">
-        <button className="chat-btn" onClick={newChat}>New chat</button>
+        <button className="chat-btn" onClick={newChat}>New chat <span className="kbd">Ctrl+N</span></button>
         <select
           className="chat-select"
           value={chatId ?? ""}
@@ -321,10 +365,12 @@ export default function ChatPage() {
           <button className="chat-btn" onClick={() => fileRef.current?.click()} disabled={loading}>
             Attach screenshot
           </button>
-          <span className="chat-hint">Ctrl+Enter to send, Ctrl+V to paste a screenshot</span>
+          <span className="chat-hint">
+            <span className="kbd">Ctrl+Enter</span> to send, <span className="kbd">Ctrl+V</span> paste screenshot, <span className="kbd">Esc</span> clear
+          </span>
         </div>
         <button className="chat-send" onClick={() => send(input)} disabled={!canSend}>
-          Send
+          Send <span className="kbd">Ctrl+Enter</span>
         </button>
       </div>
       <input
@@ -341,3 +387,13 @@ export default function ChatPage() {
     </div>
   );
 }
+
+const styles = {
+  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, gap: 16, flexWrap: "wrap" },
+  modelSelectWrapper: { display: "flex", alignItems: "center", gap: 8 },
+  modelLabel: { color: "var(--text-muted)", fontSize: 14, whiteSpace: "nowrap" },
+  modelSelect: {
+    padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)",
+    background: "var(--surface)", color: "var(--text)", fontSize: 13, minWidth: 220,
+  },
+};

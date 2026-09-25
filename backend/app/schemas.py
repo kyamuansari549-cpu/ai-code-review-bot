@@ -8,9 +8,10 @@ from .github_client import parse_pr_url
 
 
 class ReviewRequest(BaseModel):
-    """POST /reviews body — just the PR URL, validated strictly."""
+    """POST /reviews body — PR URL and optional model override."""
 
     pr_url: HttpUrl  # pydantic rejects any non-URL string for free
+    model: str | None = None  # optional model override
 
     @field_validator("pr_url", mode="after")
     @classmethod
@@ -42,6 +43,7 @@ class ReviewResponse(BaseModel):
     owner: str
     repo: str
     pr_number: int
+    model: str | None = None
     was_truncated: bool
     error: str | None
     created_at: datetime

@@ -18,6 +18,7 @@ IMAGE_PREFIXES = (
 class MessageCreate(BaseModel):
     content: str = Field(default="", max_length=MAX_CONTENT_CHARS)
     image: str | None = Field(default=None, max_length=MAX_IMAGE_CHARS)  # optional screenshot
+    model: str | None = Field(default=None, max_length=100)  # optional model override
 
     @model_validator(mode="after")
     def check_text_or_image(self):

@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 from .chat_models import Conversation, Message
 
 
-def create_conversation(db: Session, first_message: str) -> Conversation:
+def create_conversation(db: Session, first_message: str, model: str | None = None) -> Conversation:
     # Title = first ~60 characters of the first message, whitespace collapsed
     title = " ".join(first_message.split())[:60] or "New chat"
-    convo = Conversation(title=title)
+    convo = Conversation(title=title, model=model)
     db.add(convo)
     db.commit()
     db.refresh(convo)

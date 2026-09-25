@@ -21,6 +21,9 @@ class Review(Base):
     repo: Mapped[str] = mapped_column(String(100), nullable=False)
     pr_number: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    # Model used for this review
+    model: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
     # Meta about the run — useful for debugging ("why did the LLM miss file X?")
     diff_chars: Mapped[int] = mapped_column(Integer, default=0)        # size of diff sent
     files_changed: Mapped[int] = mapped_column(Integer, default=0)

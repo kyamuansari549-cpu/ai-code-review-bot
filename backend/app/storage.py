@@ -11,6 +11,7 @@ def save_review(
     pr_data: dict,               # from github_client.fetch_pr_data
     issues: list[dict],          # from llm_reviewer.review_diff
     was_truncated: bool,
+    model: str | None = None,    # model used for review
 ) -> models.Review:
     """Persist a completed review with all its comments in one transaction."""
     review = models.Review(
@@ -18,6 +19,7 @@ def save_review(
         owner=pr_data["owner"],
         repo=pr_data["repo"],
         pr_number=pr_data["pr_number"],
+        model=model,
         diff_chars=len(pr_data["diff"]),
         files_changed=len(pr_data["files"]),
         was_truncated=was_truncated,

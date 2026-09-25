@@ -107,10 +107,11 @@ def _call_llm(model: str, messages: list[dict], temperature: float, max_tokens: 
     return content.strip()
 
 
-def chat_completion(history: list[dict]) -> str:
+def chat_completion(history: list[dict], model: str | None = None) -> str:
     """Send the conversation so far to the LLM and return its reply text."""
     messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT}, *_trim_history(history)]
-    return _call_llm(settings.LLM_MODEL, messages, temperature=0.3, max_tokens=CHAT_MAX_TOKENS)
+    llm_model = model or settings.LLM_MODEL
+    return _call_llm(llm_model, messages, temperature=0.3, max_tokens=CHAT_MAX_TOKENS)
 
 
 def extract_code_from_image(data_url: str) -> str:

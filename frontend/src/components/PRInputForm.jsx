@@ -40,12 +40,12 @@ export default function PRInputForm({ onSubmit, loading }) {
 const styles = {
   form: { display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 },
   input: {
-    flex: 1, minWidth: 280, padding: "10px 12px", borderRadius: 8,
-    border: "1px solid #444", background: "#1e1e1e", color: "#eee",
+    flex: 1, minWidth: 280, padding: "10px 12px", borderRadius: "var(--radius)",
+    border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text)",
   },
   button: {
-    padding: "10px 20px", borderRadius: 8, border: "none",
-    background: "#4f8ef7", color: "#fff", cursor: "pointer", fontWeight: 600,
+    padding: "10px 20px", borderRadius: "var(--radius)", border: "none",
+    background: "var(--accent)", color: "#06211d", cursor: "pointer", fontWeight: 600,
   },
-  error: { color: "#ff6b6b", width: "100%", margin: "4px 0 0" },
+  error: { color: "var(--danger)", width: "100%", margin: "4px 0 0" },
 };

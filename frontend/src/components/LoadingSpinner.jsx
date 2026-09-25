@@ -24,8 +24,8 @@ const styles = {
   spinner: {
     ...spin,
     width: 40, height: 40, margin: "0 auto 16px",
-    border: "4px solid #333", borderTopColor: "#4f8ef7", borderRadius: "50%",
+    border: "4px solid var(--border)", borderTopColor: "var(--accent)", borderRadius: "50%",
   },
-  text: { color: "#eee", fontSize: 15, margin: 0 },
-  hint: { color: "#777", fontSize: 12, margin: "6px 0 0" },
+  text: { color: "var(--text)", fontSize: 15, margin: 0 },
+  hint: { color: "var(--text-faint)", fontSize: 12, margin: "6px 0 0" },
 };

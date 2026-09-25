@@ -70,17 +70,20 @@ def _extract_json_array(text: str) -> list[dict]:
     return issues
 
 
-def review_diff(diff: str) -> tuple[list[dict], bool]:
+def review_diff(diff: str, model: str | None = None) -> tuple[list[dict], bool]:
     """Review a PR diff. Returns (issues, was_truncated)."""
     trimmed, was_truncated = _truncate_diff(diff)
     user_msg = f"PR diff ({'TRUNCATED — ' if was_truncated else ''}{len(trimmed)} chars):\n{trimmed}"
+
+    # Use provided model or fall back to default
+    llm_model = model or settings.LLM_MODEL
 
     try:
         resp = httpx.post(
             f"{settings.LLM_BASE_URL.rstrip('/')}/chat/completions",
             headers={"Authorization": f"Bearer {settings.LLM_API_KEY}"},
             json={
-                "model": settings.LLM_MODEL,
+                "model": llm_model,
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_msg},

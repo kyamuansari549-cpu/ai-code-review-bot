@@ -17,6 +17,7 @@ class Conversation(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(120), default="New chat")
+    model: Mapped[str | None] = mapped_column(String(100), nullable=True)  # model used for this chat
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
 
     # Oldest message first; deleting a conversation deletes its messages

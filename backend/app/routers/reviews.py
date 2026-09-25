@@ -8,6 +8,7 @@ from .. import storage
 from ..github_client import InvalidPRUrlError, GitHubApiError, fetch_pr_data
 from ..llm_reviewer import LLMError, review_diff
 from ..schemas import ReviewListItem, ReviewRequest, ReviewResponse
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 
@@ -16,12 +17,13 @@ router = APIRouter(prefix="/reviews", tags=["reviews"])
 def create_review(payload: ReviewRequest, db: Session = Depends(get_db)):
     """Full pipeline: fetch PR → LLM review → save → return result."""
     pr_url = str(payload.pr_url).rstrip("/")
+    model = payload.model  # optional model override
 
     try:
         pr_data = fetch_pr_data(pr_url)
         pr_data["pr_url"] = pr_url  # storage expects it in the same dict
-        issues, was_truncated = review_diff(pr_data["diff"])
-        review = storage.save_review(db, pr_data, issues, was_truncated)
+        issues, was_truncated = review_diff(pr_data["diff"], model=model)
+        review = storage.save_review(db, pr_data, issues, was_truncated, model=model)
     except InvalidPRUrlError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     except GitHubApiError as exc:
