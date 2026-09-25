@@ -40,6 +40,16 @@ app.include_router(reviews.router)
 app.include_router(chats.router)
 
 
+@app.get("/")
+def read_root():
+    return {
+        "message": "Welcome to the AI Code Review Bot API!",
+        "health": "/health",
+        "docs": "/docs",
+        "models": "/models"
+    }
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
