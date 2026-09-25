@@ -25,11 +25,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Frontend runs on Vite dev server (localhost:5173) — allow it to call us
+# Configure CORS: support both specific list and wildcard.
+# When allowing wildcard (*), allow_credentials must be False.
+origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
+allow_all = "*" in origins or settings.ALLOWED_ORIGINS in ("*", "")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS.split(","),
-    allow_credentials=True,
+    allow_origins=["*"] if allow_all else origins,
+    allow_origin_regex=None if allow_all else r"https://.*\.vercel\.app",
+    allow_credentials=False if allow_all else True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
