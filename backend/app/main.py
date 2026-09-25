@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import init_db
+from .config import settings
 from .routers import chats, reviews
 
 
@@ -27,7 +28,7 @@ app = FastAPI(
 # Frontend runs on Vite dev server (localhost:5173) — allow it to call us
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=settings.ALLOWED_ORIGINS.split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

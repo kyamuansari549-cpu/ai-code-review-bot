@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "./theme.css";
+import "./App.css";
 import ChatPage from "./components/ChatPage";
 import HomePage from "./components/HomePage";
 import HistoryPage from "./components/HistoryPage";
@@ -6,10 +8,27 @@ import HistoryPage from "./components/HistoryPage";
 const TABS = [
   { id: "chat", label: "Code chat" },
   { id: "home", label: "PR review" },
-  { id: "history", label: "PR history" },
+  { id: "history", label: "History" },
 ];
 
-// Root component: a top nav plus one page at a time.
+// Small mark used in the top bar in place of a generic emoji icon:
+// two code brackets around a dot, standing in for "review".
+function Mark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M8 6 3 12l5 6M16 6l5 6-5 6"
+        stroke="var(--accent)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="1.6" fill="var(--accent)" />
+    </svg>
+  );
+}
+
+// Root component: a top bar (mark + tabs) plus one page at a time.
 // Tab state is enough for a few pages, so no router dependency.
 // ChatPage stays mounted (only hidden) so switching tabs doesn't lose the conversation.
 // The PR pages remount on every visit, so History re-fetches (good).
@@ -18,17 +37,24 @@ export default function App() {
 
   return (
     <>
-      <nav style={styles.nav}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            style={{ ...styles.tab, ...(tab === t.id ? styles.active : {}) }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <header className="app-topbar">
+        <span className="app-mark">
+          <Mark />
+          Code Review
+        </span>
+        <nav className="app-tabs">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              className={`app-tab ${tab === t.id ? "app-tab-active" : ""}`}
+              onClick={() => setTab(t.id)}
+              aria-current={tab === t.id ? "page" : undefined}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
+      </header>
 
       <div style={{ display: tab === "chat" ? "block" : "none" }}>
         <ChatPage />
@@ -38,15 +64,3 @@ export default function App() {
     </>
   );
 }
-
-const styles = {
-  nav: {
-    display: "flex", gap: 8, justifyContent: "center",
-    padding: "16px 20px 0", fontFamily: "system-ui",
-  },
-  tab: {
-    background: "transparent", color: "#888", border: "1px solid #2a2a2a",
-    borderRadius: 8, padding: "8px 16px", fontSize: 14, cursor: "pointer",
-  },
-  active: { background: "#1e1e1e", color: "#4f8ef7", borderColor: "#4f8ef7" },
-};

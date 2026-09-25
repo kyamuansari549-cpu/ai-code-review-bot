@@ -1,0 +1,60 @@
+/* ---------------------------------------------------------------
+   Design tokens. Dark, editor-like surfaces (flat + hairline
+   borders, no shadows) with a single teal accent reserved for
+   interactive state. Manrope carries UI text; JetBrains Mono is
+   for anything that is literally code or data.
+   --------------------------------------------------------------- */
+:root {
+  --bg: #0b0d12;
+  --surface: #12151c;
+  --surface-raised: #191d26;
+  --border: #232733;
+  --border-strong: #323847;
+
+  --text: #e6e9f0;
+  --text-muted: #8a92a6;
+  --text-faint: #5b6376;
+
+  --accent: #45d0c0;
+  --accent-strong: #7be3d6;
+  --accent-wash: rgba(69, 208, 192, 0.12);
+
+  --danger: #ff6b6b;
+  --warn: #f2b84b;
+  --good: #6bcf8f;
+
+  --font-ui: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, "SF Mono", monospace;
+
+  --radius: 8px;
+  --radius-sm: 6px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent-wash); color: var(--text); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #454d5f; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+button, select, textarea, input {
+  font-family: inherit;
+  color: inherit;
+}

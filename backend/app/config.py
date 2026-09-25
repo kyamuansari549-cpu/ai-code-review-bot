@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     LLM_BASE_URL: str = "https://api.openai.com/v1"
     LLM_MODEL: str = "gpt-4o-mini"
     LLM_VISION_MODEL: str = ""
+    ALLOWED_ORIGINS: str = "http://localhost:5173"
 
     # SQLite database file path
     DATABASE_URL: str = "sqlite:///./reviews.db"

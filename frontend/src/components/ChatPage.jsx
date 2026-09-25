@@ -242,7 +242,7 @@ export default function ChatPage() {
 
   return (
     <div className="chat-page">
-      <h1 className="chat-title">💬 Code chat</h1>
+      <h1 className="chat-title">Code chat</h1>
       <p className="chat-sub">
         Paste code or a screenshot, get a review, then ask follow-ups or the full fixed code.
       </p>
@@ -319,9 +319,9 @@ export default function ChatPage() {
       <div className="chat-footer">
         <div className="chat-footer-left">
           <button className="chat-btn" onClick={() => fileRef.current?.click()} disabled={loading}>
-            📎 Screenshot
+            Attach screenshot
           </button>
-          <span className="chat-hint">Ctrl+Enter to send · Ctrl+V pastes a screenshot</span>
+          <span className="chat-hint">Ctrl+Enter to send, Ctrl+V to paste a screenshot</span>
         </div>
         <button className="chat-send" onClick={() => send(input)} disabled={!canSend}>
           Send
