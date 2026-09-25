@@ -15,13 +15,11 @@ const MAX_IMAGE_SIDE = 1600; // big screenshots are shrunk before upload
 const MAX_IMAGE_CHARS = 3_500_000; // stays under the backend limit (4,000,000)
 const SCREENSHOT_MARK = "📷"; // backend starts screenshot messages with this
 
-// Model options - in production, fetch from backend /models endpoint
-const MODEL_OPTIONS = [
-  { id: "gpt-4o-mini", label: "GPT-4o Mini (fast, cheap)" },
-  { id: "gpt-4o", label: "GPT-4o (best quality)" },
-  { id: "gpt-4-turbo", label: "GPT-4 Turbo" },
-  { id: "claude-3-5-sonnet", label: "Claude 3.5 Sonnet" },
-  { id: "llama-3.1-70b", label: "Llama 3.1 70B (local)" },
+// Default fallback options if /models API call fails
+const FALLBACK_MODELS = [
+  { id: "", label: "Default Model (Server Config)" },
+  { id: "gpt-4o-mini", label: "GPT-4o Mini" },
+  { id: "gpt-4o", label: "GPT-4o" },
 ];
 
 // One-click follow-ups, shown once a chat has started
@@ -143,7 +141,8 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [attachError, setAttachError] = useState("");
-  const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0].id);
+  const [models, setModels] = useState(FALLBACK_MODELS);
+  const [selectedModel, setSelectedModel] = useState("");
   const bottomRef = useRef(null);
   const fileRef = useRef(null);
   const { showToast } = useToast();
@@ -156,6 +155,22 @@ export default function ChatPage() {
   };
 
   useEffect(loadChats, []);
+
+  // Load models from backend
+  useEffect(() => {
+    api.listModels()
+      .then((data) => {
+        if (data && data.models) {
+          const list = [
+            { id: "", label: `Default Model (${data.default})` },
+            ...data.models.map((m) => ({ id: m, label: m })),
+          ];
+          setModels(list);
+          setSelectedModel(""); // default to server config
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Scroll to the newest message
   useEffect(() => {
@@ -202,9 +217,10 @@ export default function ChatPage() {
     }
 
     try {
+      const modelToUse = selectedModel || null;
       const data = chatId
-        ? await api.sendChatMessage(chatId, content, img, selectedModel)
-        : await api.createChat(content, img, selectedModel);
+        ? await api.sendChatMessage(chatId, content, img, modelToUse)
+        : await api.createChat(content, img, modelToUse);
       setChatId(data.id);
       setMessages(data.messages);
       loadChats();
@@ -284,7 +300,7 @@ export default function ChatPage() {
             disabled={loading}
             style={styles.modelSelect}
           >
-            {MODEL_OPTIONS.map((m) => (
+            {models.map((m) => (
               <option key={m.id} value={m.id}>{m.label}</option>
             ))}
           </select>

@@ -43,3 +43,23 @@ app.include_router(chats.router)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/models")
+def list_models():
+    """List the LLM models available for the frontend dropdown.
+
+    Returns the default model first, then any additional models
+    configured via the LLM_MODELS env var (comma-separated).
+    """
+    models = [settings.LLM_MODEL]
+    if settings.LLM_MODELS:
+        models += [m.strip() for m in settings.LLM_MODELS.split(",") if m.strip()]
+    # Deduplicate while preserving order
+    seen = set()
+    unique = []
+    for m in models:
+        if m not in seen:
+            seen.add(m)
+            unique.append(m)
+    return {"default": settings.LLM_MODEL, "models": unique}

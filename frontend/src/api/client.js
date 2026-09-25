@@ -56,4 +56,9 @@ export const api = {
   getChat: (id) => request(`/chats/${id}`),
 
   deleteChat: (id) => request(`/chats/${id}`, { method: "DELETE" }),
+
+  // ---- Models ----
+
+  // Fetch available models from backend (for the dropdown)
+  listModels: () => request("/models"),
 };

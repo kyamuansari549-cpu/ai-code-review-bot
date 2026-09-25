@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { api } from "../api/client";
 import PRInputForm from "../components/PRInputForm";
 import ReviewCard from "../components/ReviewCard";
@@ -6,13 +6,11 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import CopyButton from "../components/CopyButton";
 import { useToast } from "../components/ToastContainer";
 
-// Model options - in production, fetch from backend /models endpoint
-const MODEL_OPTIONS = [
-  { id: "gpt-4o-mini", label: "GPT-4o Mini (fast, cheap)" },
-  { id: "gpt-4o", label: "GPT-4o (best quality)" },
-  { id: "gpt-4-turbo", label: "GPT-4 Turbo" },
-  { id: "claude-3-5-sonnet", label: "Claude 3.5 Sonnet" },
-  { id: "llama-3.1-70b", label: "Llama 3.1 70B (local)" },
+// Default fallback options if /models API call fails
+const FALLBACK_MODELS = [
+  { id: "", label: "Default Model (Server Config)" },
+  { id: "gpt-4o-mini", label: "GPT-4o Mini" },
+  { id: "gpt-4o", label: "GPT-4o" },
 ];
 
 // Helper: format review as Markdown for copying
@@ -87,15 +85,34 @@ export default function HomePage() {
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0].id);
+  const [models, setModels] = useState(FALLBACK_MODELS);
+  const [selectedModel, setSelectedModel] = useState("");
   const { showToast } = useToast();
+
+  // Load models on mount
+  useEffect(() => {
+    api.listModels()
+      .then((data) => {
+        if (data && data.models) {
+          const list = [
+            { id: "", label: `Default Model (${data.default})` },
+            ...data.models.map((m) => ({ id: m, label: m })),
+          ];
+          setModels(list);
+          setSelectedModel(""); // default to server default
+        }
+      })
+      .catch(() => {
+        // use fallback models
+      });
+  }, []);
 
   const handleSubmit = useCallback(async (prUrl) => {
     setLoading(true);
     setError("");
     setReview(null);
     try {
-      const data = await api.createReview(prUrl, selectedModel);
+      const data = await api.createReview(prUrl, selectedModel || null);
       setReview(data);
     } catch (err) {
       setError(err.message);
@@ -127,7 +144,7 @@ export default function HomePage() {
             disabled={loading}
             style={styles.modelSelect}
           >
-            {MODEL_OPTIONS.map((m) => (
+            {models.map((m) => (
               <option key={m.id} value={m.id}>{m.label}</option>
             ))}
           </select>

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     LLM_API_KEY: str = ""
     LLM_BASE_URL: str = "https://api.openai.com/v1"
     LLM_MODEL: str = "gpt-4o-mini"
+    # Comma-separated list of additional models for the frontend dropdown
+    LLM_MODELS: str = ""
     LLM_VISION_MODEL: str = ""
     ALLOWED_ORIGINS: str = "http://localhost:5173"
 
